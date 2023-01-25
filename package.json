@@ -1,0 +1,28 @@
+{
+  "name": "mern-chat-app",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Real time chat application built using MERN & socket.io",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon backend/server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eswarmaganti/MERN-CHAT-APP.git"
+  },
+  "author": "Eswar Krishna Maganti",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eswarmaganti/MERN-CHAT-APP/issues"
+  },
+  "homepage": "https://github.com/eswarmaganti/MERN-CHAT-APP#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.8.4"
+  }
+}
