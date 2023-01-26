@@ -63,8 +63,8 @@ const TabPanel = ({ value, index, children }) => {
 
 const styles = {
   homepage: {
-    height: "100vh",
-    width: "100vw",
+    minHeight: "100vh",
+    // width: "100vw",
     background:
       'linear-gradient(45deg, rgba(0,0,0,.9) 0%, rgba(0,0,0,0.7) 90%), url("src/assets/images/background.jpg")',
     backgroundRepeat: "no-repeat",
