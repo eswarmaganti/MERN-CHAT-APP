@@ -63,3 +63,20 @@ export const loginUser = asyncHandler(async (req, res, next) => {
     token: generateToken(user._id),
   });
 });
+
+//@route /api/user/
+//@access private
+//@description to fetch / search the available users from DB
+export const getAllUsers = asyncHandler(async (req, res, next) => {
+  const keyword = req.query.search
+    ? {
+        $or: [
+          { name: { $regex: req.query.search, $options: "i" } },
+          { email: { $regex: req.query.search, $options: "i" } },
+        ],
+      }
+    : {};
+
+  const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+  res.status(200).json(users);
+});
