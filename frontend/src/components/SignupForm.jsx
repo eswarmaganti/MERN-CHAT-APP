@@ -58,10 +58,6 @@ const SignupForm = () => {
   // state to store the profile picture info when selected from file system
   const [profilePicture, setProfilePicture] = useState(null);
 
-  useEffect(() => {
-    setShowAlert(isError);
-  }, [isError]);
-
   const uploadProfilePicture = async (e) => {
     setLoading(true);
     const image = e.target.files[0];
@@ -111,8 +107,6 @@ const SignupForm = () => {
     }
   };
 
-  console.log(profilePictureUrl);
-
   const onRegisterUser = async (data) => {
     await registerUser({ ...data, profilePicture: profilePictureUrl });
     if (!isLoading) {
@@ -120,6 +114,18 @@ const SignupForm = () => {
       setProfilePicture(null);
     }
   };
+
+  useEffect(() => {
+    setShowAlert(isError);
+  }, [isError]);
+
+  useEffect(() => {
+    // dispatch a action to store the login info in state and local storage
+    if (data?.token) {
+      dispatch(setUserInfo(data));
+      navigate("/chats");
+    }
+  }, [data?.token]);
 
   return (
     <>

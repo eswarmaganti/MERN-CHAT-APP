@@ -48,7 +48,6 @@ const LoginForm = () => {
       navigate("/chats");
     }
   }, [data?.token]);
-  console.log(data);
 
   return (
     <>
