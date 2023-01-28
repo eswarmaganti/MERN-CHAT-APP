@@ -1,5 +1,5 @@
 import { createTheme } from "@mui/material";
-import { green } from "@mui/material/colors";
+import { grey, indigo } from "@mui/material/colors";
 
 const THEME = createTheme({
   typography: {
@@ -7,7 +7,7 @@ const THEME = createTheme({
   },
   palette: {
     primary: {
-      main: green[600],
+      main: indigo[600],
     },
   },
 });

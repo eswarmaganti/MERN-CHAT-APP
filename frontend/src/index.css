@@ -6,3 +6,13 @@
   box-sizing: border-box;
   font-family: "Quicksand", sans-serif;
 }
+
+a:link,
+a:visited {
+  text-decoration: none;
+  color: black;
+}
+
+input::placeholder {
+  font-size: 14px;
+}

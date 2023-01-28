@@ -1,14 +1,9 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
+
+import UserChatBox from "../components/UserChatBox";
 
 const ChatsPage = () => {
-  const { user } = useSelector((state) => state.chatAppUserInfo);
-  return (
-    <Box>
-      <Typography>Name:{user.name}</Typography>
-    </Box>
-  );
+  return <UserChatBox />;
 };
 
 export default ChatsPage;
