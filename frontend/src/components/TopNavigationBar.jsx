@@ -6,27 +6,44 @@ import {
   Stack,
   TextField,
   Typography,
+  Button,
 } from "@mui/material";
 import {
   MoreHorizOutlined as MenuIcon,
   ChatRounded as ChatIcon,
+  Close,
 } from "@mui/icons-material";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { grey } from "@mui/material/colors";
 
 import AppLogo from "./Utils/AppLogo";
 import { useLazySearchUsersQuery } from "../app/services/authApi";
+import { useCreateChatMutation } from "../app/services/chatApi";
+import { setSelectedChat } from "../app/slice/chatSlice";
 import UserAvatar from "./Utils/UserAvatar";
+import ToastAlert from "./Utils/ToastAlert";
+import UserInfo from "./Utils/UserInfo";
 
 const TopNavigationBar = () => {
   const { user } = useSelector((state) => state.chatAppUserInfo);
 
-  const [trigger, { data: searchUsers, isLoading, isError }] =
-    useLazySearchUsersQuery({});
+  // state hook to show / hide search results
+  const [showSearchResults, setShowSearchResults] = useState(false);
 
+  // RTK Query to trigger the user search
+  const [trigger, { data: searchUsers, isLoading, isError }] =
+    useLazySearchUsersQuery();
+
+  // handler callback for handling user search
   const onSearchTextChange = (e) => {
-    trigger({ searchText: e.target.value.trim(), token: user.token });
+    if (e.target.value) {
+      setShowSearchResults(true);
+      trigger({ searchText: e.target.value.trim(), token: user.token });
+    } else {
+      setShowSearchResults(false);
+    }
   };
+
   return (
     <Stack
       direction="row"
@@ -43,6 +60,7 @@ const TopNavigationBar = () => {
         focused
         placeholder="search by name or email address"
         onChange={onSearchTextChange}
+        autoComplete="off"
       />
       <Stack direction="row" alignItems="center" gap={2}>
         <IconButton>
@@ -51,48 +69,86 @@ const TopNavigationBar = () => {
         <Avatar src={user.profilePicture} />
       </Stack>
 
-      <SearchResultsPanel users={searchUsers} />
+      <SearchResultsPanel
+        users={searchUsers}
+        showSearchResults={showSearchResults}
+        setShowSearchResults={setShowSearchResults}
+      />
     </Stack>
   );
 };
 
-const SearchResultsPanel = ({ users }) => {
-  return users?.length > 0 ? (
+const SearchResultsPanel = ({
+  users,
+  showSearchResults,
+  setShowSearchResults,
+}) => {
+  const dispatch = useDispatch();
+
+  // RTK Mutation for creating or accessing  Chat
+  const [createChat, { isLoading, isError, data: createdChatData, error }] =
+    useCreateChatMutation();
+
+  // state for showing error messages
+  const [showAlert, setShowAlert] = useState(isError);
+
+  // selecting the user info from redux store
+  const { user } = useSelector((state) => state.chatAppUserInfo);
+
+  // handler callback to create a new chat
+  const handleCreateChat = async (userId) => {
+    await createChat({ userId, token: user.token });
+  };
+
+  useEffect(() => {
+    setShowAlert(isError);
+  }, [isError]);
+
+  // selecting the chat after it got created
+  useEffect(() => {
+    if (createdChatData && createdChatData.length === 1) {
+      dispatch(setSelectedChat(createdChatData[0]));
+      handleCloseSearchResults();
+    }
+  }, [createdChatData]);
+
+  const handleCloseSearchResults = () => {
+    setShowSearchResults(false);
+  };
+  return showSearchResults ? (
     <Box sx={styles.searchResultsContainer}>
-      {users.map((user) => (
+      <Button
+        size="small"
+        variant="text"
+        startIcon={<Close />}
+        sx={{ alignSelf: "flex-end" }}
+        onClick={handleCloseSearchResults}
+      >
+        Close
+      </Button>
+      {users?.map((user) => (
         <Stack
           key={user._id}
           direction="row"
           alignItems="center"
           justifyContent="space-between"
-          sx={{
-            "&:hover": {
-              backgroundColor: grey[100],
-            },
-            cursor: "pointer",
-          }}
+          sx={styles.searchResultItem}
         >
-          <Stack
-            direction="row"
-            gap={2}
-            sx={{
-              px: 2,
-              py: 1,
-              borderBottom: `1px solid ${grey[300]}`,
-              width: "100%",
-            }}
+          <UserInfo user={user} />
+          <IconButton
+            color="primary"
+            onClick={() => handleCreateChat(user._id)}
           >
-            <UserAvatar imgUrl={user.profilePicture} />
-            <Stack>
-              <Typography variant="subtitle2">{user.name}</Typography>
-              <Typography variant="caption">{user.email}</Typography>
-            </Stack>
-          </Stack>
-          <IconButton color="primary">
             <ChatIcon />
           </IconButton>
         </Stack>
       ))}
+
+      <ToastAlert
+        message={error?.data?.message}
+        open={showAlert}
+        onClose={() => setShowALert(!showAlert)}
+      />
     </Box>
   ) : null;
 };
@@ -120,6 +176,20 @@ const styles = {
     borderBottomRightRadius: ".5rem",
     boxShadow: `2px 2px 10px ${grey[300]}`,
     overflowY: "auto",
+    display: "flex",
+    flexDirection: "column",
+    py: 0.5,
+  },
+  searchResultItem: {
+    "&:hover": {
+      backgroundColor: grey[100],
+    },
+    borderBottom: `1px solid ${grey[300]}`,
+    "&:last-child": {
+      borderBottom: `none`,
+    },
+
+    cursor: "pointer",
   },
   searchInput: {
     width: "400px",

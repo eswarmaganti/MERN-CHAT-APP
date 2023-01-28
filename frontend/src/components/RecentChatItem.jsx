@@ -2,17 +2,34 @@ import React from "react";
 import { Stack, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import UserAvatar from "./Utils/UserAvatar";
+import { useSelector } from "react-redux";
+import dayjs from "dayjs";
 
-const RecentChatItem = ({ user }) => {
+import groupChatProfilePicture from "../assets/images/group.png";
+import { getSenderData, getSenderName } from "../config";
+
+const RecentChatItem = ({ chat, onClick }) => {
+  const { user } = useSelector((state) => state.chatAppUserInfo);
+
+  const chatSenderData = getSenderData(chat?.users, user);
+  const chatSenderName = getSenderName(chat?.users, user);
+
   return (
     <Stack
       direction="row"
       justifyContent="space-between"
       alignItems="center"
       sx={styles.chatItemContainer}
+      onClick={onClick}
     >
       <Stack direction="row" gap={1}>
-        <UserAvatar imgUrl={user.profilePicture} />
+        <UserAvatar
+          imgUrl={
+            !chat.isGroupChat
+              ? chatSenderData.profilePicture
+              : groupChatProfilePicture
+          }
+        />
         <Stack>
           <Typography
             variant="subtitle2"
@@ -20,7 +37,7 @@ const RecentChatItem = ({ user }) => {
             component="h5"
             sx={{ fontWeight: 500 }}
           >
-            {user.name}
+            {!chat.isGroupChat ? chatSenderName : chat.chatName}
           </Typography>
           <Typography
             variant="caption"
@@ -30,7 +47,9 @@ const RecentChatItem = ({ user }) => {
           </Typography>
         </Stack>
       </Stack>
-      <Typography variant="caption">Time & date</Typography>
+      <Typography variant="caption">
+        {dayjs(chat?.latestMessage?.createdAt).format("h:MM A")}
+      </Typography>
     </Stack>
   );
 };

@@ -1,24 +1,50 @@
-import React from "react";
-import { Stack, Paper, Typography, IconButton } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Stack,
+  Paper,
+  Typography,
+  IconButton,
+  LinearProgress,
+} from "@mui/material";
 import RecentChatItem from "./RecentChatItem";
 import { grey } from "@mui/material/colors";
 import {
   VideocamOutlined as VideoCamIcon,
-  AddRounded as AddIcon,
+  GroupAddRounded as GroupAddIcon,
 } from "@mui/icons-material";
+
+import { useFetchChatsQuery } from "../app/services/chatApi";
+import { useSelector, useDispatch } from "react-redux";
+
+import { setSelectedChat } from "../app/slice/chatSlice";
+import CreateGroupChat from "./CreateGroupChat";
+
 const RecentChatsList = () => {
+  const { user } = useSelector((state) => state.chatAppUserInfo);
+  const { data: chats, isLoading, isError } = useFetchChatsQuery(user.token);
+
+  // state hoook for creating a new chat dialog
+  const [showCrateGroupChat, setShowCrateGroupChat] = useState(false);
   return (
     <Stack sx={styles.container} component={Paper}>
-      <ChatListHeader />
+      <ChatListHeader
+        setShowCrateGroupChat={setShowCrateGroupChat}
+        showCrateGroupChat={showCrateGroupChat}
+      />
       <Typography variant="caption" sx={{ p: 1 }}>
         Recent
       </Typography>
-      <ChatsList />
+      {!isLoading ? <ChatsList chats={chats} /> : <LinearProgress />}
+
+      <CreateGroupChat
+        open={showCrateGroupChat}
+        handleClose={() => setShowCrateGroupChat(!showCrateGroupChat)}
+      />
     </Stack>
   );
 };
 
-const ChatListHeader = () => {
+const ChatListHeader = ({ setShowCrateGroupChat, showCrateGroupChat }) => {
   return (
     <Stack
       direction="row"
@@ -34,34 +60,29 @@ const ChatListHeader = () => {
         <IconButton>
           <VideoCamIcon />
         </IconButton>
-        <IconButton>
-          <AddIcon />
+        <IconButton onClick={() => setShowCrateGroupChat(!showCrateGroupChat)}>
+          <GroupAddIcon />
         </IconButton>
       </Stack>
     </Stack>
   );
 };
 
-const ChatsList = () => {
+const ChatsList = ({ chats }) => {
+  const dispatch = useDispatch();
+
+  const handleSelectedChat = (selectedChat) => {
+    dispatch(setSelectedChat(selectedChat));
+  };
   return (
     <Stack sx={styles.chatListContainer}>
-      <RecentChatItem />
-      <RecentChatItem />
-      <RecentChatItem />
-      <RecentChatItem />
-      <RecentChatItem />
-      <RecentChatItem />
-      <RecentChatItem />
-      <RecentChatItem />
-      <RecentChatItem />
-      <RecentChatItem />
-      <RecentChatItem />
-      <RecentChatItem />
-      <RecentChatItem />
-      <RecentChatItem />
-      <RecentChatItem />
-      <RecentChatItem />
-      <RecentChatItem />
+      {chats.map((chat) => (
+        <RecentChatItem
+          chat={chat}
+          key={chat._id}
+          onClick={() => handleSelectedChat(chat)}
+        />
+      ))}
     </Stack>
   );
 };

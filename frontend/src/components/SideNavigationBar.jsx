@@ -12,11 +12,12 @@ import {
   GroupsRounded as GroupsActiveIcon,
   LocalPhoneRounded as PhoneActiveIcon,
 } from "@mui/icons-material";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { grey, indigo } from "@mui/material/colors";
 
 const SideNavigationBar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navigationLinks = [
     {
@@ -53,6 +54,12 @@ const SideNavigationBar = () => {
   const isActiveLink = (link) => {
     return location.pathname === link;
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem("chatAppUserInfo");
+    navigate("/");
+  };
+
   return (
     <Stack
       alignItems="center"
@@ -80,7 +87,7 @@ const SideNavigationBar = () => {
         ))}
       </Stack>
       <Stack alignItems="center">
-        <IconButton>
+        <IconButton onClick={handleLogout}>
           <LogoutIcon />
         </IconButton>
         <Typography
