@@ -75,8 +75,12 @@ export const getAllUsers = asyncHandler(async (req, res, next) => {
           { email: { $regex: req.query.search, $options: "i" } },
         ],
       }
-    : {};
+    : null;
+
+  if (!keyword) {
+    return res.status(200).send([]);
+  }
 
   const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
-  res.status(200).json(users);
+  res.status(200).send(users);
 });

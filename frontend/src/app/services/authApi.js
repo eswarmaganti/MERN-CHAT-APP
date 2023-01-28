@@ -18,7 +18,20 @@ export const authApi = createApi({
         body: data,
       }),
     }),
+    searchUsers: builder.query({
+      query: ({ searchText, token }) => ({
+        url: `api/user?search=${searchText}`,
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
+    }),
   }),
 });
 
-export const { useLoginUserMutation, useRegisterUserMutation } = authApi;
+export const {
+  useLoginUserMutation,
+  useRegisterUserMutation,
+  useLazySearchUsersQuery,
+} = authApi;

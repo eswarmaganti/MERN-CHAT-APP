@@ -75,14 +75,6 @@ const styles = {
 
   chatListContainer: {
     overflowY: "auto",
-    "&::-webkit-scrollbar": { width: 4, px: 2 },
-    "&::-webkit-scrollbar-track": {
-      background: "#f1f1f1",
-    },
-    "&::-webkit-scrollbar-thumb": {
-      background: grey[400],
-      borderRadius: 10,
-    },
   },
   chatListHeaderContainer: { p: 1, borderBottom: `1px solid ${grey[300]}` },
 };

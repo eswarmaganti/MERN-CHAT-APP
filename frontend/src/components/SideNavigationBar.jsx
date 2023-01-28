@@ -66,7 +66,7 @@ const SideNavigationBar = () => {
     >
       <Stack gap={2}>
         {navigationLinks.map((item) => (
-          <Link to={item.link}>
+          <Link to={item.link} key={item.name}>
             <IconButton>
               {isActiveLink(item.link) ? item.activeIcon : item.icon}
             </IconButton>
