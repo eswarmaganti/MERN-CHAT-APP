@@ -1,19 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
 import * as Yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TextField, Snackbar, Box, Button, Alert } from "@mui/material";
+import { TextField, Box, Button, Alert, Typography } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { toast, ToastContainer } from "react-toastify";
 
 import { useLoginUserMutation } from "../app/services/authApi";
 import { useEffect } from "react";
 import Spinner from "./Utils/Spinner";
 import { setUserInfo } from "../app/slice/userSlice";
+import ToastAlert from "./Utils/ToastAlert";
 
 const LoginForm = () => {
-  const [showAlert, setShowAlert] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -38,7 +39,8 @@ const LoginForm = () => {
   };
 
   useEffect(() => {
-    setShowAlert(isError);
+    console.log("From Login Page", isError);
+    if (isError) toast.error(error?.data?.message);
   }, [isError]);
 
   useEffect(() => {
@@ -50,8 +52,11 @@ const LoginForm = () => {
   }, [data?.token]);
 
   return (
-    <>
-      <Box sx={styles.container}>
+    <Box sx={styles.container}>
+      <Box sx={{ margin: "auto", maxWidth: "50%" }}>
+        <Typography sx={{ py: 1 }} variant="h6">
+          Login with your credentials
+        </Typography>
         <form
           noValidate
           autoComplete="off"
@@ -63,15 +68,7 @@ const LoginForm = () => {
             label="Email Address"
             variant="filled"
             fullWidth
-            focused
             margin="dense"
-            InputProps={{
-              sx: {
-                "& input": {
-                  color: "white",
-                },
-              },
-            }}
             {...register("email")}
             helperText={errors.email?.message}
             error={Boolean(errors.email?.message)}
@@ -82,15 +79,7 @@ const LoginForm = () => {
             label="Password"
             variant="filled"
             fullWidth
-            focused
             margin="dense"
-            InputProps={{
-              sx: {
-                "& input": {
-                  color: "white",
-                },
-              },
-            }}
             {...register("password")}
             helperText={errors.password?.message}
             error={Boolean(errors.password?.message)}
@@ -98,42 +87,21 @@ const LoginForm = () => {
           <Button
             variant="contained"
             type="submit"
-            sx={
-              isLoading ? { pointerEvents: "none", mt: "1rem" } : { mt: "1rem" }
-            }
+            disabled={isLoading}
+            sx={{ mt: "1rem" }}
             startIcon={isLoading ? <Spinner /> : <LoginIcon />}
           >
             Login
           </Button>
         </form>
       </Box>
-      <Snackbar
-        anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
-        open={showAlert}
-        onClose={() => setShowAlert(!showAlert)}
-      >
-        <Alert
-          onClose={() => setShowAlert(!showAlert)}
-          sx={{ width: "100%" }}
-          severity="error"
-          variant="filled"
-        >
-          {error?.data?.message}
-        </Alert>
-      </Snackbar>
-    </>
+      <ToastAlert />
+    </Box>
   );
 };
 
 const styles = {
-  container: {
-    padding: "1rem",
-    borderRadius: ".5rem",
-    mt: "1rem",
-    background: "rgba( 0, 0, 0, 0.1 )",
-    backdropFilter: "blur( 4px )",
-    border: " 1px solid rgba( 255, 255, 255, 0.18 )",
-  },
+  container: {},
 };
 
 const loginSchema = Yup.object({

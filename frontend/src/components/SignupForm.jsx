@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Box, TextField, Button, Typography } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Avatar,
+  Stack,
+} from "@mui/material";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -10,6 +17,7 @@ import { useRegisterUserMutation } from "../app/services/authApi";
 import Spinner from "./Utils/Spinner";
 import { green } from "@mui/material/colors";
 import ToastAlert from "./Utils/ToastAlert";
+import { toast } from "react-toastify";
 
 const SignupForm = () => {
   const signupSchema = Yup.object({
@@ -41,9 +49,6 @@ const SignupForm = () => {
   const [registerUser, { isError, isLoading, error, data }] =
     useRegisterUserMutation();
 
-  // state to show / hide the alert messages
-  const [showAlert, setShowAlert] = useState(isError);
-
   // state to hold the final url of profile picture from cloudinary
   const [profilePictureUrl, setProfilePictureUrl] = useState("");
 
@@ -64,10 +69,7 @@ const SignupForm = () => {
     setProfilePicture(image);
     console.log(image);
     if (image == undefined) {
-      setImageError({
-        error: true,
-        message: "Please select a profile picture",
-      });
+      toast.error("Please select a profile picture");
       setLoading(false);
 
       return;
@@ -75,12 +77,8 @@ const SignupForm = () => {
 
     if (image.type == "image/jpeg" || image.type == "image/png") {
       if (!(image.size / Math.pow(1024, 2) <= 2)) {
-        setImageError({
-          error: true,
-          message: "Profile picture size should be less than 2 MB",
-        });
+        toast.error("Profile picture size should be less than 2 MB");
         setLoading(false);
-
         return;
       }
 
@@ -98,10 +96,10 @@ const SignupForm = () => {
         const { data } = await response;
         setProfilePictureUrl(data.url);
         setLoading(false);
+        toast.success("Profile picture uploaded successfully");
       } catch (error) {
         setLoading(false);
-
-        setImageError({ error: true, message: error.message });
+        toast.error(error.message);
         console.error(error);
       }
     }
@@ -110,33 +108,36 @@ const SignupForm = () => {
   const onRegisterUser = async (data) => {
     await registerUser({ ...data, profilePicture: profilePictureUrl });
     if (!isLoading) {
-      reset();
       setProfilePicture(null);
     }
   };
 
   useEffect(() => {
-    setShowAlert(isError);
+    if (isError) toast.error(error?.data?.message);
   }, [isError]);
 
   useEffect(() => {
     // dispatch a action to store the login info in state and local storage
     if (data?.token) {
+      reset();
       dispatch(setUserInfo(data));
       navigate("/chats");
     }
   }, [data?.token]);
 
   return (
-    <>
-      <Box sx={styles.container}>
-        <img
+    <Box sx={styles.container}>
+      <Stack
+        alignItems="center"
+        sx={{ maxWidth: "50%", margin: "auto", pt: 2 }}
+      >
+        <Avatar
+          sx={styles.avatar}
           src={
             profilePicture
               ? URL.createObjectURL(profilePicture)
               : "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
           }
-          style={styles.image}
         />
 
         <form
@@ -150,15 +151,8 @@ const SignupForm = () => {
             label="Full Name"
             variant="filled"
             fullWidth
-            focused
             margin="dense"
-            InputProps={{
-              sx: {
-                "& input": {
-                  color: "white",
-                },
-              },
-            }}
+            size="small"
             {...register("name")}
             helperText={errors.name?.message}
             error={Boolean(errors.name?.message)}
@@ -169,15 +163,8 @@ const SignupForm = () => {
             label="Email Address"
             variant="filled"
             fullWidth
-            focused
             margin="dense"
-            InputProps={{
-              sx: {
-                "& input": {
-                  color: "white",
-                },
-              },
-            }}
+            size="small"
             {...register("email")}
             helperText={errors.email?.message}
             error={Boolean(errors.email?.message)}
@@ -188,15 +175,8 @@ const SignupForm = () => {
             label="Password"
             variant="filled"
             fullWidth
-            focused
             margin="dense"
-            InputProps={{
-              sx: {
-                "& input": {
-                  color: "white",
-                },
-              },
-            }}
+            size="small"
             {...register("password")}
             helperText={errors.password?.message}
             error={Boolean(errors.password?.message)}
@@ -207,15 +187,8 @@ const SignupForm = () => {
             label="Confirm Password"
             variant="filled"
             fullWidth
-            focused
             margin="dense"
-            InputProps={{
-              sx: {
-                "& input": {
-                  color: "white",
-                },
-              },
-            }}
+            size="small"
             {...register("confirmPassword")}
             helperText={errors.confirmPassword?.message}
             error={Boolean(errors.confirmPassword?.message)}
@@ -226,6 +199,7 @@ const SignupForm = () => {
               variant="outlined"
               component="label"
               fullWidth
+              color="info"
               startIcon={<AddPhotoAlternate />}
             >
               Upload Profile Photo
@@ -263,39 +237,20 @@ const SignupForm = () => {
             Signup
           </Button>
         </form>
-      </Box>
-
-      <ToastAlert
-        open={showAlert}
-        onClose={setShowAlert}
-        message={error?.data?.message}
-      />
-      <ToastAlert
-        open={imageError.error}
-        onClose={() => setImageError({ error: false, message: "" })}
-        message={imageError.message}
-      />
-    </>
+        <ToastAlert />
+      </Stack>
+    </Box>
   );
 };
 
 const styles = {
   container: {
-    padding: "1rem",
-    border: "1px solid #121212",
-    borderRadius: ".5rem",
-    mt: "1rem",
-    background: "rgba( 0, 0, 0, 0.1 )",
-    backdropFilter: "blur( 4px )",
-    border: " 1px solid rgba( 255, 255, 255, 0.18 )",
-    display: "grid",
-    placeItems: "center",
+    height: "calc(100% - 55px)",
   },
-  image: {
-    height: "100px",
-    width: "100px",
+  avatar: {
+    height: "70px",
+    width: "70px",
     objectFit: "cover",
-    borderRadius: "50%",
   },
 };
 

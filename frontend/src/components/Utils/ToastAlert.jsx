@@ -1,31 +1,21 @@
-import { Alert, Snackbar } from "@mui/material";
 import React from "react";
+import { ToastContainer } from "react-toastify";
 
-const ToastAlert = ({ open, onClose, message, severity }) => {
+const ToastAlert = () => {
   return (
-    <Snackbar
-      anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
-      open={open}
-      onClose={() => onClose(!open)}
-      autoHideDuration={5000}
-    >
-      <Alert
-        elevation={4}
-        onClose={() => onClose(!open)}
-        sx={{ width: "100%" }}
-        severity={severity}
-        variant="filled"
-      >
-        {message}
-      </Alert>
-    </Snackbar>
+    <ToastContainer
+      position="bottom-center"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="colored"
+    />
   );
-};
-
-ToastAlert.defaultProps = {
-  severity: "error",
-  open: true,
-  onClose: () => {},
 };
 
 export default ToastAlert;

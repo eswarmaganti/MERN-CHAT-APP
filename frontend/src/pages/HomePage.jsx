@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import LoginForm from "../components/LoginForm";
 import SignupForm from "../components/SignupForm";
+import HomeNavbar from "../components/HomeNavbar";
 
 const HomePage = () => {
   const [tab, setTab] = useState(0);
@@ -10,8 +11,8 @@ const HomePage = () => {
     setTab(tab);
   };
   return (
-    <Box sx={styles.homepage}>
-      <Typography
+    <Box>
+      {/* <Typography
         sx={styles.heading}
         color="primary"
         variant="h4"
@@ -43,7 +44,9 @@ const HomePage = () => {
         <TabPanel value={tab} index={1}>
           <SignupForm />
         </TabPanel>
-      </Box>
+      </Box> */}
+      <HomeNavbar />
+      <Typography>Talk Chat</Typography>
     </Box>
   );
 };
@@ -70,7 +73,7 @@ const styles = {
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
     backgroundPosition: "center",
-    padding: "2rem 0",
+    // padding: "2rem 4rem",
   },
   heading: {
     fontWeight: "bold",

@@ -30,3 +30,7 @@ input::placeholder {
   background-color: #bdbdbd;
   border-radius: 3px;
 }
+
+.Toastify {
+  font-size: 14px;
+}

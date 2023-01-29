@@ -6,6 +6,9 @@ import NotificationsPage from "./pages/NotificationsPage";
 import CallsPage from "./pages/CallsPage";
 import ChatGroupsPage from "./pages/ChatGroupsPage";
 import DashboardLayout from "./components/DashboardLayout";
+import HomeLayout from "./components/HomeLayout";
+import SignupPage from "./pages/SignupPage";
+import LoginPage from "./pages/LoginPage";
 
 const AppRouter = () => {
   return (
@@ -13,7 +16,19 @@ const AppRouter = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
 
-        <Route path="/" element={<DashboardLayout />}>
+        <Route path="/" element={<HomeLayout />}>
+          <Route path="signup" element={<SignupPage />} />
+          <Route path="login" element={<LoginPage />} />
+        </Route>
+
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route
             path="chats"
             element={

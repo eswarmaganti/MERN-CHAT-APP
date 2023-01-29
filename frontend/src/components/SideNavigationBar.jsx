@@ -57,7 +57,7 @@ const SideNavigationBar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("chatAppUserInfo");
-    navigate("/");
+    navigate("/login");
   };
 
   return (
