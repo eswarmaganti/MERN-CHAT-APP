@@ -55,11 +55,6 @@ const SignupForm = () => {
   // state to store the loading of profile picture
   const [loading, setLoading] = useState(false);
 
-  // state to store the profile picture errors
-  const [imageError, setImageError] = useState({
-    error: false,
-    message: "",
-  });
   // state to store the profile picture info when selected from file system
   const [profilePicture, setProfilePicture] = useState(null);
 
@@ -71,13 +66,14 @@ const SignupForm = () => {
     if (image == undefined) {
       toast.error("Please select a profile picture");
       setLoading(false);
-
+      setProfilePicture(null);
       return;
     }
 
     if (image.type == "image/jpeg" || image.type == "image/png") {
       if (!(image.size / Math.pow(1024, 2) <= 2)) {
         toast.error("Profile picture size should be less than 2 MB");
+        setProfilePicture(null);
         setLoading(false);
         return;
       }

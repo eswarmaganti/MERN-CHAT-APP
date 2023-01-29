@@ -36,4 +36,8 @@ export const chatApi = createApi({
   }),
 });
 
-export const { useFetchChatsQuery, useCreateChatMutation } = chatApi;
+export const {
+  useFetchChatsQuery,
+  useCreateGroupChatMutation,
+  useCreateChatMutation,
+} = chatApi;

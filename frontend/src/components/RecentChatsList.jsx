@@ -18,13 +18,27 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { setSelectedChat } from "../app/slice/chatSlice";
 import CreateGroupChat from "./CreateGroupChat";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 const RecentChatsList = () => {
   const { user } = useSelector((state) => state.chatAppUserInfo);
-  const { data: chats, isLoading, isError } = useFetchChatsQuery(user.token);
+  const {
+    data: chats,
+    isLoading,
+    isError,
+    error,
+  } = useFetchChatsQuery(user.token);
 
   // state hoook for creating a new chat dialog
   const [showCrateGroupChat, setShowCrateGroupChat] = useState(false);
+
+  useEffect(() => {
+    if (isError) {
+      toast.error(error.data.message);
+    }
+  }, [isError]);
+
   return (
     <Stack sx={styles.container} component={Paper}>
       <ChatListHeader
@@ -57,10 +71,10 @@ const ChatListHeader = ({ setShowCrateGroupChat, showCrateGroupChat }) => {
       </Typography>
 
       <Stack direction="row" alignItems="center" gap={1}>
-        <IconButton>
-          <VideoCamIcon />
-        </IconButton>
-        <IconButton onClick={() => setShowCrateGroupChat(!showCrateGroupChat)}>
+        <IconButton
+          color="primary"
+          onClick={() => setShowCrateGroupChat(!showCrateGroupChat)}
+        >
           <GroupAddIcon />
         </IconButton>
       </Stack>
