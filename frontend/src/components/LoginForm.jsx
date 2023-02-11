@@ -2,7 +2,7 @@ import React from "react";
 import * as Yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TextField, Box, Button, Alert, Typography } from "@mui/material";
+import { TextField, Box, Button, Container, Typography } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -52,8 +52,8 @@ const LoginForm = () => {
   }, [data?.token]);
 
   return (
-    <Box sx={styles.container}>
-      <Box sx={{ margin: "auto", maxWidth: "50%" }}>
+    <Container maxWidth="sm">
+      <Box mt={4}>
         <Typography sx={{ py: 1 }} variant="h6">
           Login with your credentials
         </Typography>
@@ -96,12 +96,8 @@ const LoginForm = () => {
         </form>
       </Box>
       <ToastAlert />
-    </Box>
+    </Container>
   );
-};
-
-const styles = {
-  container: {},
 };
 
 const loginSchema = Yup.object({

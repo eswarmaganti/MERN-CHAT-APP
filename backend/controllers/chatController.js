@@ -31,13 +31,14 @@ export const createOrAccessChat = asyncHandler(async (req, res) => {
     select: "name profilePicture email",
   });
 
-  console.log(isChat);
   if (isChat.length > 0) {
     res.send(isChat);
   } else {
+    const senderData = await User.findById(userId);
+
     try {
       const newChat = await Chat.create({
-        chatName: "sender",
+        chatName: senderData.name,
         isGroupChat: false,
         users: [userId, req.user._id],
       });
@@ -116,7 +117,7 @@ export const removeFromGroupChat = asyncHandler(async (req, res) => {
   const { userId } = req.body;
   if (!userId) {
     res.status(400);
-    throw new Error("user is mandatory to add to a group");
+    throw new Error("userId is mandatory to remove from a group");
   }
   try {
     const updatedChat = await Chat.findByIdAndUpdate(
@@ -148,6 +149,14 @@ export const addUserToGroupChat = asyncHandler(async (req, res) => {
     throw new Error("user is mandatory to add to a group");
   }
   try {
+    const user = await Chat.findOne({ _id: chatId, users: { $in: [userId] } });
+    // check whether the user is already in the group
+    console.log(user);
+    if (user) {
+      res.status(400);
+      throw new Error("User is already exists in the group");
+    }
+
     const updatedChat = await Chat.findByIdAndUpdate(
       chatId,
       {

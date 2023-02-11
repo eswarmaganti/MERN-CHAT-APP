@@ -5,6 +5,7 @@ import {
   Typography,
   IconButton,
   LinearProgress,
+  List,
 } from "@mui/material";
 import RecentChatItem from "./RecentChatItem";
 import { grey } from "@mui/material/colors";
@@ -48,7 +49,7 @@ const RecentChatsList = () => {
       <Typography variant="caption" sx={{ p: 1 }}>
         Recent
       </Typography>
-      {!isLoading ? <ChatsList chats={chats} /> : <LinearProgress />}
+      {!isLoading && chats ? <ChatsList chats={chats} /> : <LinearProgress />}
 
       <CreateGroupChat
         open={showCrateGroupChat}
@@ -89,7 +90,7 @@ const ChatsList = ({ chats }) => {
     dispatch(setSelectedChat(selectedChat));
   };
   return (
-    <Stack sx={styles.chatListContainer}>
+    <List sx={styles.chatListContainer}>
       {chats.map((chat) => (
         <RecentChatItem
           chat={chat}
@@ -97,7 +98,7 @@ const ChatsList = ({ chats }) => {
           onClick={() => handleSelectedChat(chat)}
         />
       ))}
-    </Stack>
+    </List>
   );
 };
 

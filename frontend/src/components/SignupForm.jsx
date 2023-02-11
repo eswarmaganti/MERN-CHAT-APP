@@ -18,6 +18,7 @@ import Spinner from "./Utils/Spinner";
 import { green } from "@mui/material/colors";
 import ToastAlert from "./Utils/ToastAlert";
 import { toast } from "react-toastify";
+import { Container } from "@mui/system";
 
 const SignupForm = () => {
   const signupSchema = Yup.object({
@@ -122,119 +123,121 @@ const SignupForm = () => {
   }, [data?.token]);
 
   return (
-    <Box sx={styles.container}>
-      <Stack
-        alignItems="center"
-        sx={{ maxWidth: "50%", margin: "auto", pt: 2 }}
-      >
-        <Avatar
-          sx={styles.avatar}
-          src={
-            profilePicture
-              ? URL.createObjectURL(profilePicture)
-              : "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
-          }
-        />
-
-        <form
-          noValidate
-          autoComplete="off"
-          onSubmit={handleSubmit(onRegisterUser)}
+    <Box sx={styles.container} pt={5}>
+      <Container maxWidth="sm">
+        <Stack
+          alignItems="center"
+          // sx={{ maxWidth: "50%", margin: "auto", pt: 2 }}
         >
-          <TextField
-            type="text"
-            name="name"
-            label="Full Name"
-            variant="filled"
-            fullWidth
-            margin="dense"
-            size="small"
-            {...register("name")}
-            helperText={errors.name?.message}
-            error={Boolean(errors.name?.message)}
-          />
-          <TextField
-            type="email"
-            name="email"
-            label="Email Address"
-            variant="filled"
-            fullWidth
-            margin="dense"
-            size="small"
-            {...register("email")}
-            helperText={errors.email?.message}
-            error={Boolean(errors.email?.message)}
-          />
-          <TextField
-            type="password"
-            name="password"
-            label="Password"
-            variant="filled"
-            fullWidth
-            margin="dense"
-            size="small"
-            {...register("password")}
-            helperText={errors.password?.message}
-            error={Boolean(errors.password?.message)}
-          />
-          <TextField
-            type="password"
-            name="confirmPassword"
-            label="Confirm Password"
-            variant="filled"
-            fullWidth
-            margin="dense"
-            size="small"
-            {...register("confirmPassword")}
-            helperText={errors.confirmPassword?.message}
-            error={Boolean(errors.confirmPassword?.message)}
+          <Avatar
+            sx={styles.avatar}
+            src={
+              profilePicture
+                ? URL.createObjectURL(profilePicture)
+                : "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
+            }
           />
 
-          <Box sx={{ my: ".5rem" }}>
-            <Button
-              variant="outlined"
-              component="label"
-              fullWidth
-              color="info"
-              startIcon={<AddPhotoAlternate />}
-            >
-              Upload Profile Photo
-              <input
-                accept="image/*"
-                type="file"
-                hidden
-                onChange={uploadProfilePicture}
-              />
-            </Button>
-            <Typography
-              variant="body2"
-              component="p"
-              color="white"
-              sx={{ pt: "2px" }}
-            >
-              {profilePicture?.name}
-            </Typography>
-          </Box>
-
-          <Button
-            variant="contained"
-            type="submit"
-            startIcon={loading || isLoading ? <Spinner /> : <PersonAdd />}
-            disabled={loading || isLoading}
-            sx={{
-              "&.Mui-disabled": {
-                backgroundColor: green[600],
-                color: "white",
-                opacity: ".5",
-              },
-              mt: ".5rem",
-            }}
+          <form
+            noValidate
+            autoComplete="off"
+            onSubmit={handleSubmit(onRegisterUser)}
           >
-            Signup
-          </Button>
-        </form>
-        <ToastAlert />
-      </Stack>
+            <TextField
+              type="text"
+              name="name"
+              label="Full Name"
+              variant="filled"
+              fullWidth
+              margin="dense"
+              size="small"
+              {...register("name")}
+              helperText={errors.name?.message}
+              error={Boolean(errors.name?.message)}
+            />
+            <TextField
+              type="email"
+              name="email"
+              label="Email Address"
+              variant="filled"
+              fullWidth
+              margin="dense"
+              size="small"
+              {...register("email")}
+              helperText={errors.email?.message}
+              error={Boolean(errors.email?.message)}
+            />
+            <TextField
+              type="password"
+              name="password"
+              label="Password"
+              variant="filled"
+              fullWidth
+              margin="dense"
+              size="small"
+              {...register("password")}
+              helperText={errors.password?.message}
+              error={Boolean(errors.password?.message)}
+            />
+            <TextField
+              type="password"
+              name="confirmPassword"
+              label="Confirm Password"
+              variant="filled"
+              fullWidth
+              margin="dense"
+              size="small"
+              {...register("confirmPassword")}
+              helperText={errors.confirmPassword?.message}
+              error={Boolean(errors.confirmPassword?.message)}
+            />
+
+            <Box sx={{ my: ".5rem" }}>
+              <Button
+                variant="outlined"
+                component="label"
+                fullWidth
+                color="info"
+                startIcon={<AddPhotoAlternate />}
+              >
+                Upload Profile Photo
+                <input
+                  accept="image/*"
+                  type="file"
+                  hidden
+                  onChange={uploadProfilePicture}
+                />
+              </Button>
+              <Typography
+                variant="body2"
+                component="p"
+                color="white"
+                sx={{ pt: "2px" }}
+              >
+                {profilePicture?.name}
+              </Typography>
+            </Box>
+
+            <Button
+              variant="contained"
+              type="submit"
+              startIcon={loading || isLoading ? <Spinner /> : <PersonAdd />}
+              disabled={loading || isLoading}
+              sx={{
+                "&.Mui-disabled": {
+                  backgroundColor: green[600],
+                  color: "white",
+                  opacity: ".5",
+                },
+                mt: ".5rem",
+              }}
+            >
+              Signup
+            </Button>
+          </form>
+          <ToastAlert />
+        </Stack>
+      </Container>
     </Box>
   );
 };

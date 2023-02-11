@@ -1,6 +1,10 @@
 import React from "react";
-import { Stack, Typography } from "@mui/material";
-import { grey } from "@mui/material/colors";
+import {
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
+  Typography,
+} from "@mui/material";
 import UserAvatar from "./Utils/UserAvatar";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
@@ -12,58 +16,33 @@ const RecentChatItem = ({ chat, onClick }) => {
   const { user } = useSelector((state) => state.chatAppUserInfo);
 
   const chatSenderData = getSenderData(chat?.users, user);
-  const chatSenderName = getSenderName(chat?.users, user);
 
   return (
-    <Stack
-      direction="row"
-      justifyContent="space-between"
-      alignItems="center"
-      sx={styles.chatItemContainer}
-      onClick={onClick}
-    >
-      <Stack direction="row" gap={1}>
+    <ListItemButton alignItems="flex-start" onClick={onClick}>
+      <ListItemAvatar>
         <UserAvatar
           imgUrl={
             !chat.isGroupChat
               ? chatSenderData.profilePicture
               : groupChatProfilePicture
           }
+          isActive={true}
         />
-        <Stack>
+      </ListItemAvatar>
+      <ListItemText
+        primary={chat.chatName}
+        secondary={
           <Typography
-            variant="subtitle2"
-            color="black"
-            component="h5"
-            sx={{ fontWeight: 500 }}
+            sx={{ display: "inline", lineHeight: "1" }}
+            component="span"
+            variant="body2"
           >
-            {!chat.isGroupChat ? chatSenderName : chat.chatName}
+            Hello
           </Typography>
-          <Typography
-            variant="caption"
-            sx={{ color: grey[700], lineHeight: "1" }}
-          >
-            {user.latestMessage}
-          </Typography>
-        </Stack>
-      </Stack>
-      <Typography variant="caption">
-        {dayjs(chat?.latestMessage?.createdAt).format("h:MM A")}
-      </Typography>
-    </Stack>
+        }
+      />
+    </ListItemButton>
   );
-};
-
-const styles = {
-  chatItemContainer: {
-    py: 0.5,
-    px: 0.5,
-    borderBottom: `1px solid ${grey[300]}`,
-    cursor: "pointer",
-    "&:hover": {
-      backgroundColor: grey[100],
-    },
-  },
 };
 
 RecentChatItem.defaultProps = {

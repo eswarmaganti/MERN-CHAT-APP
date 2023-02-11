@@ -10,6 +10,7 @@ import {
   Grid,
   IconButton,
   LinearProgress,
+  Avatar,
 } from "@mui/material";
 import {
   GroupAddRounded as CreateGroupIcon,
@@ -28,6 +29,8 @@ import { toast } from "react-toastify";
 
 import ToastAlert from "./Utils/ToastAlert";
 import Spinner from "./Utils/Spinner";
+import SearchUserResultsPanel from "./SearchUserResultsPanel";
+import DisplayGroupParticipants from "./DisplayGroupParticipants";
 
 const CreateGroupChat = ({ open, handleClose }) => {
   const groupChatSchema = Yup.object({
@@ -144,17 +147,22 @@ const CreateGroupChat = ({ open, handleClose }) => {
             noValidate
             onChange={onSearchUsers}
           />
-          <SelectedGroupUsers
-            removeParticipents={removeParticipents}
-            groupParticipents={groupParticipents}
-          />
 
+          {/* ------------ Component to display the Selected Users for creating a Group ---------- */}
+
+          <DisplayGroupParticipants
+            onDeleteHandler={removeParticipents}
+            groupParticipants={groupParticipents}
+          />
           {isLoading && <LinearProgress />}
-          <SearchResultsPanel
+
+          {/* --------- Component to display Search Results of Users ------ */}
+          <SearchUserResultsPanel
             users={searchUsers}
-            addParticipents={addParticipents}
-            showSearchResults={showSearchResults}
+            handleAction={addParticipents}
             setShowSearchResults={setShowSearchResults}
+            showSearchResults={showSearchResults}
+            actionIcon={<CreateGroupIcon />}
           />
 
           <Stack direction="row" sx={{ mt: 1 }} justifyContent="space-between">
@@ -169,92 +177,18 @@ const CreateGroupChat = ({ open, handleClose }) => {
             </Button>
             <Button
               color="error"
-              variant="contained"
+              variant="text"
               size="small"
               startIcon={<CloseIcon />}
               onClick={handleClose}
             >
-              Close
+              Close Dialog
             </Button>
           </Stack>
         </form>
       </Box>
       <ToastAlert />
     </Dialog>
-  );
-};
-
-const SearchResultsPanel = ({
-  users,
-  addParticipents,
-  showSearchResults,
-  setShowSearchResults,
-}) => {
-  if (users && users.length > 0 && showSearchResults) {
-    return (
-      <Box
-        sx={{
-          backgroundColor: grey[200],
-          borderRadius: "1rem",
-          p: 0.5,
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <Button
-          color="error"
-          variant="text"
-          size="small"
-          startIcon={<CloseIcon />}
-          sx={{ alignSelf: "flex-end" }}
-          onClick={() => setShowSearchResults(false)}
-        >
-          Close
-        </Button>
-        <Box sx={{ maxHeight: "150px", overflow: "auto" }}>
-          {users.map((user) => (
-            <Stack
-              key={user._id}
-              sx={{
-                "&:hover": {
-                  backgroundColor: grey[100],
-                },
-                borderBottom: `1px solid ${grey[300]}`,
-                "&:last-child": {
-                  borderBottom: `none`,
-                },
-
-                cursor: "pointer",
-              }}
-              direction="row"
-              alignItems="center"
-            >
-              <UserInfo user={user} />
-              <IconButton color="primary" onClick={() => addParticipents(user)}>
-                <PersonAddIcon />
-              </IconButton>
-            </Stack>
-          ))}
-        </Box>
-      </Box>
-    );
-  }
-};
-
-const SelectedGroupUsers = ({ removeParticipents, groupParticipents }) => {
-  return (
-    <Grid container sx={{ my: 1 }}>
-      {groupParticipents.map((item) => (
-        <Grid item xs={3} sx={{ mb: 1 }} key={item._id}>
-          <Chip
-            label={item.name}
-            variant="filled"
-            color="info"
-            onDelete={() => removeParticipents(item._id)}
-          />
-        </Grid>
-      ))}
-    </Grid>
   );
 };
 
