@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Stack,
   Paper,
@@ -13,13 +13,11 @@ import {
   VideocamOutlined as VideoCamIcon,
   GroupAddRounded as GroupAddIcon,
 } from "@mui/icons-material";
-
-import { useFetchChatsQuery } from "../app/services/chatApi";
 import { useSelector, useDispatch } from "react-redux";
 
+import { useFetchChatsQuery } from "../app/services/chatApi";
 import { setSelectedChat } from "../app/slice/chatSlice";
 import CreateGroupChat from "./CreateGroupChat";
-import { useEffect } from "react";
 import { toast } from "react-toastify";
 
 const RecentChatsList = () => {
@@ -84,10 +82,12 @@ const ChatListHeader = ({ setShowCrateGroupChat, showCrateGroupChat }) => {
 };
 
 const ChatsList = ({ chats }) => {
+  const { selectedChat } = useSelector((state) => state.chat);
   const dispatch = useDispatch();
 
-  const handleSelectedChat = (selectedChat) => {
-    dispatch(setSelectedChat(selectedChat));
+  const handleSelectedChat = (newSelectedChat) => {
+    if (selectedChat._id !== newSelectedChat._id)
+      dispatch(setSelectedChat(newSelectedChat));
   };
   return (
     <List sx={styles.chatListContainer}>

@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 
 import groupChatProfilePicture from "../assets/images/group.png";
 import { getSenderData, getSenderName } from "../config";
+import { Stack } from "@mui/system";
 
 const RecentChatItem = ({ chat, onClick }) => {
   const { user } = useSelector((state) => state.chatAppUserInfo);
@@ -32,13 +33,14 @@ const RecentChatItem = ({ chat, onClick }) => {
       <ListItemText
         primary={chat.chatName}
         secondary={
-          <Typography
-            sx={{ display: "inline", lineHeight: "1" }}
-            component="span"
-            variant="body2"
-          >
-            Hello
-          </Typography>
+          <>
+            <Typography variant="subtitle2" component="span">
+              {chat?.latestMessage?.sender?.name.split(" ")[0]}:
+            </Typography>
+            <Typography variant="caption" component="span">
+              {chat?.latestMessage?.content}
+            </Typography>
+          </>
         }
       />
     </ListItemButton>

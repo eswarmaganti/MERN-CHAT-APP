@@ -44,7 +44,7 @@ export const fetchAllMessages = asyncHandler(async (req, res) => {
 
   try {
     const messages = await Message.find({ chat: chatId })
-      .populate("sender", "name pic email")
+      .populate("sender", "name profilePicture email")
       .populate("chat");
 
     res.status(200).json(messages);
