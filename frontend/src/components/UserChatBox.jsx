@@ -1,41 +1,51 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Stack,
   IconButton,
   TextField,
   LinearProgress,
-  Typography,
-  Chip,
-  Avatar,
 } from "@mui/material";
-import { green, grey } from "@mui/material/colors";
+import { grey, indigo } from "@mui/material/colors";
 import { SendRounded as SendIcon } from "@mui/icons-material";
 import { useSelector } from "react-redux";
-import ChatBoxHeader from "./ChatBoxHeader";
+import io from "socket.io-client";
 
+import ChatBoxHeader from "./ChatBoxHeader";
 import { useForm } from "react-hook-form";
 import Spinner from "./Utils/Spinner";
 import {
   useFetchMessagesQuery,
   useSendNewMessageMutation,
 } from "../app/services/messageApi";
+import ChatBubble from "./ChatBubble";
+
+const ENDPOINT = "http://localhost:5000";
+var socket, selectedChatCompare;
 
 const UserChatBox = ({ chat }) => {
+  // state hook to hold messages data
+
+  const [messages, setMessages] = useState([]);
   const { register, handleSubmit, formState, setValue } = useForm();
 
   const { user } = useSelector((state) => state.chatAppUserInfo);
-  const { data: messages, isLoading: isMessagesLoading } =
-    useFetchMessagesQuery({
-      chatId: chat._id,
-      token: user.token,
-    });
+  const {
+    data: fetchMessagesData,
+    isLoading,
+    isSuccess: isFetchMessagesSuccess,
+    isFetching: isFetchMessagesLoading,
+  } = useFetchMessagesQuery({
+    chatId: chat._id,
+    token: user.token,
+  });
 
   const [
     sendNewMessage,
     {
       data: sendNewMessageData,
       isLoading: isSendNewMessageLoading,
+      isSuccess: isSendNewMessageSuccess,
       isError: isSendNewMessageError,
       error: sendNewMessageError,
     },
@@ -55,10 +65,36 @@ const UserChatBox = ({ chat }) => {
     );
   };
 
+  useEffect(() => {
+    socket = io(ENDPOINT);
+    socket.emit("setup", user);
+  }, []);
+
+  // effect hook to update the messages
+  useEffect(() => {
+    if (!isFetchMessagesLoading) {
+      socket.emit("join chat", chat._id);
+      setMessages([...fetchMessagesData]);
+    }
+  }, [JSON.stringify(fetchMessagesData)]);
+
+  useEffect(() => {
+    if (isSendNewMessageSuccess) {
+      socket.emit("new message", sendNewMessageData);
+      setMessages([...messages, sendNewMessageData]);
+    }
+  }, [isSendNewMessageSuccess]);
+
+  useEffect(() => {
+    socket.on("message received", (newMessage) => {
+      setMessages([...messages, newMessage]);
+    });
+  });
+
   return (
     <Box sx={{ height: "100%" }}>
       <ChatBoxHeader />
-      {isMessagesLoading && <LinearProgress />}
+      {isFetchMessagesLoading && <LinearProgress />}
       <Box
         sx={{
           height: `${chat ? "calc(100% - 55px)" : "100%"}`,
@@ -68,56 +104,36 @@ const UserChatBox = ({ chat }) => {
         }}
       >
         <Box sx={{ position: "relative", height: "100%" }}>
-          {!isMessagesLoading && (
+          {!isFetchMessagesLoading && (
             <Stack
               sx={{
                 height: "100%",
                 overflowY: "auto",
-                maxHeight: "calc(100% - 65px)",
+                maxHeight: "calc(100% - 100px)",
               }}
             >
               {messages.map((msg, ind) =>
                 user._id === msg.sender._id ? (
-                  <Chip
+                  <ChatBubble
+                    msg={msg}
                     key={msg._id}
-                    label={msg.content}
-                    sx={{ alignSelf: "flex-end", mb: 0.5 }}
-                    color="primary"
+                    align="end"
+                    color={indigo[600]}
+                  />
+                ) : isLastMessage(msg.sender._id, ind) ? (
+                  <ChatBubble
+                    msg={msg}
+                    key={msg._id}
+                    showProfilePicture={true}
                   />
                 ) : (
-                  <React.Fragment key={msg._id}>
-                    {isLastMessage(msg.sender._id, ind) ? (
-                      <Stack direction="row" gap={1}>
-                        <Avatar
-                          sx={{ height: 32, width: 32 }}
-                          src={msg.sender.profilePicture}
-                        />
-                        <Chip
-                          label={msg.content}
-                          sx={{
-                            alignSelf: "flex-start",
-                            mb: 0.5,
-                            backgroundColor: grey[400],
-                          }}
-                        />
-                      </Stack>
-                    ) : (
-                      <Chip
-                        label={msg.content}
-                        sx={{
-                          alignSelf: "flex-start",
-                          mb: 0.5,
-                          ml: 5,
-                          backgroundColor: grey[400],
-                        }}
-                      />
-                    )}
-                  </React.Fragment>
+                  <ChatBubble msg={msg} key={msg._id} />
                 )
               )}
             </Stack>
           )}
 
+          {/* -------- FORM to send new Messages ---------- */}
           <form
             noValidate
             autoComplete="off"
@@ -137,7 +153,7 @@ const UserChatBox = ({ chat }) => {
                 fullWidth
                 name="message"
                 multiline
-                rows={1}
+                rows={2}
                 sx={{ flexGrow: 1 }}
                 {...register("content")}
               />

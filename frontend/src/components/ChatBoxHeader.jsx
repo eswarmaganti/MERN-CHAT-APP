@@ -6,12 +6,13 @@ import {
   LocalPhoneRounded as PhoneIcon,
   OpenInNewOutlined as PopOutIcon,
   InfoRounded as InfoIcon,
+  Groups2Rounded as GroupsIcon,
 } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { grey, indigo } from "@mui/material/colors";
+import { Stack, Typography, IconButton, Avatar } from "@mui/material";
 
 import UserAvatar from "./Utils/UserAvatar";
-import { Stack, Typography, IconButton } from "@mui/material";
 import UpdateGroupChat from "./UpdateGroupChat";
 
 const ChatBoxHeader = () => {
@@ -48,7 +49,13 @@ const ChatBoxHeader = () => {
           }}
         >
           <Stack direction="row" alignItems="center" gap={1}>
-            <UserAvatar imgUrl={chatSender?.profilePicture} isActive={true} />
+            {!chat.isGroupChat ? (
+              <UserAvatar imgUrl={chatSender?.profilePicture} isActive={true} />
+            ) : (
+              <Avatar sx={{ backgroundColor: indigo[600] }}>
+                <GroupsIcon />
+              </Avatar>
+            )}
             <Typography
               variant="subtitle2"
               component="h6"
